@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block title %}User Dashboard - QuickDesk{% endblock %}
+
+{% block content %}
+  <h2>Submit a Ticket</h2>
+
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      <ul class="flashes">
+        {% for message in messages %}
+          <li>{{ message }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+  {% endwith %}
+
+  <form method="POST" action="/create-ticket" enctype="multipart/form-data">
+    <label>Subject</label>
+    <input type="text" name="subject" required>
+
+    <label>Description</label>
+    <textarea name="description" required></textarea>
+
+    <label>Category</label>
+    <select name="category">
+      <option value="IT Support">IT Support</option>
+      <option value="HR">HR</option>
+      <option value="General">General</option>
+    </select>
+
+    <label>Attachment</label>
+    <input type="file" name="attachment">
+
+    <button type="submit">Submit Ticket</button>
+  </form>
+
+  <hr>
+
+  <h3>Your Submitted Tickets</h3>
+  {% for ticket in tickets %}
+    <div class="ticket">
+      <strong>{{ ticket.subject }}</strong> -
+      <span class="status">{{ ticket.status }}</span><br>
+      Category: {{ ticket.category }}<br>
+      Last Updated: {{ ticket.updated_at.strftime('%Y-%m-%d %H:%M') }}<br>
+
+      {% if ticket.attachment %}
+        <a href="{{ url_for('static', filename='uploads/' ~ ticket.attachment) }}" download>Download Attachment</a><br>
+      {% endif %}
+
+      <a href="{{ url_for('agent.ticket_detail', ticket_id=ticket.id) }}">View Details</a>
+    </div>
+  {% else %}
+    <p>No tickets yet.</p>
+  {% endfor %}
+{% endblock %}

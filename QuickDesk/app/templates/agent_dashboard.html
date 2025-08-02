@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block title %}Agent Dashboard - QuickDesk{% endblock %}
+
+{% block content %}
+  <h2>Support Agent Panel</h2>
+
+  {% for ticket in tickets %}
+    <div class="ticket">
+      <h3>
+        <a href="{{ url_for('agent.ticket_detail', ticket_id=ticket.id) }}">
+          #{{ ticket.id }} - {{ ticket.subject }}
+        </a>
+      </h3>
+      <p><strong>Status:</strong> {{ ticket.status }}</p>
+      <p><strong>Category:</strong> {{ ticket.category }}</p>
+      <p><strong>Submitted By:</strong> {{ ticket.creator.username if ticket.creator else 'Unknown' }}</p>
+      <p><strong>Last Updated:</strong> {{ ticket.updated_at.strftime('%Y-%m-%d %H:%M') }}</p>
+
+      {% if not ticket.agent_id %}
+        <form action="{{ url_for('agent.assign_ticket', ticket_id=ticket.id) }}" method="GET">
+          <button type="submit">Assign to Me</button>
+        </form>
+      {% elif ticket.agent_id == current_user.id %}
+        <p><strong>Assigned to you</strong></p>
+      {% else %}
+        <p><strong>Assigned to:</strong> {{ ticket.assigned_agent.username }}</p>
+      {% endif %}
+
+      <p><a href="{{ url_for('agent.ticket_detail', ticket_id=ticket.id) }}">View Details & Comments →</a></p>
+    </div>
+  {% else %}
+    <p>No tickets available.</p>
+  {% endfor %}
+{% endblock %}

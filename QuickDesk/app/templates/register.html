@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block title %}Register - QuickDesk{% endblock %}
+
+{% block content %}
+  <h2>Register</h2>
+
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      <ul class="flashes">
+        {% for message in messages %}
+          <li>{{ message }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+  {% endwith %}
+
+  <form method="POST" action="/register">
+    <label>Username</label>
+    <input type="text" name="username" required>
+
+    <label>Email</label>
+    <input type="email" name="email" required>
+
+    <label>Password</label>
+    <input type="password" name="password" required>
+
+    <label>Role</label>
+    <select name="role" required>
+      <option value="user">User</option>
+      <option value="agent">Support Agent</option>
+      <option value="admin">Admin</option>
+    </select>
+
+    <button type="submit">Register</button>
+
+    <p>Already have an account? <a href="/login">Login</a></p>
+  </form>
+{% endblock %}

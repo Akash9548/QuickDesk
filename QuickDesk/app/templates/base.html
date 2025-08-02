@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>{% block title %}QuickDesk{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+  {% if request.endpoint not in ['auth.login', 'auth.register'] %}
+    <div class="top-bar">
+      <a href="{{ url_for('auth.logout') }}" class="logout-btn">Logout</a>
+    </div>
+  {% endif %}
+
+  <div class="container active">
+    {% block content %}{% endblock %}
+  </div>
+
+</html>

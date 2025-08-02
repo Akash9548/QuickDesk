@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Dashboard - QuickDesk{% endblock %}
+
+{% block content %}
+  <h2>Welcome, Admin</h2>
+
+  <h3>Users</h3>
+  <table border="1">
+    <tr>
+      <th>ID</th>
+      <th>Username</th>
+      <th>Email</th>
+      <th>Role</th>
+      <th>Actions</th>
+    </tr>
+    {% for user in users %}
+      <tr>
+        <td>{{ user.id }}</td>
+        <td>{{ user.username }}</td>
+        <td>{{ user.email }}</td>
+        <td>{{ user.role }}</td>
+        <td>
+          {% if user.role != 'admin' %}
+            <form method="POST" action="{{ url_for('admin.change_role', user_id=user.id) }}" style="display:inline;">
+              <select name="new_role">
+                <option value="user" {% if user.role == 'user' %}selected{% endif %}>User</option>
+                <option value="agent" {% if user.role == 'agent' %}selected{% endif %}>Agent</option>
+              </select>
+              <button type="submit">Update Role</button>
+            </form>
+            <form method="POST" action="{{ url_for('admin.delete_user', user_id=user.id) }}" style="display:inline;">
+              <button type="submit" onclick="return confirm('Are you sure?')">Delete</button>
+            </form>
+          {% endif %}
+        </td>
+      </tr>
+    {% endfor %}
+  </table>
+
+  <hr>
+  <h3>All Tickets</h3>
+  {% for ticket in tickets %}
+    <div class="ticket">
+      <h4>{{ ticket.subject }}</h4>
+      <p><strong>Status:</strong> {{ ticket.status }}</p>
+      <p><strong>Category:</strong> {{ ticket.category }}</p>
+      
+      <p><strong>Submitted By:</strong> 
+        {{ ticket.creator.username if ticket.creator else 'Unknown' }}
+      </p>
+
+      <p><strong>Assigned Agent:</strong> 
+        {{ ticket.agent.username if ticket.agent else 'Unassigned' }}
+      </p>
+
+      <p><strong>Submitted On:</strong> 
+        {{ ticket.created_at.strftime('%Y-%m-%d %H:%M') }}
+      </p>
+
+      <p><strong>Last Updated:</strong> 
+        {{ ticket.updated_at.strftime('%Y-%m-%d %H:%M') }}
+      </p>
+
+      {% if ticket.attachment %}
+        <p><a href="{{ url_for('static', filename='uploads/' ~ ticket.attachment) }}" download>Download Attachment</a></p>
+      {% endif %}
+    </div>
+  {% else %}
+    <p>No tickets found.</p>
+  {% endfor %}
+{% endblock %}

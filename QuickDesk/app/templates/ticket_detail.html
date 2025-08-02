@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Ticket #{{ ticket.id }} - QuickDesk</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+  <div class="container active">
+    <h2>Ticket #{{ ticket.id }} - {{ ticket.subject }}</h2>
+
+    <div class="ticket">
+      <p><strong>Status:</strong> <span class="status">{{ ticket.status }}</span></p>
+      <p><strong>Category:</strong> {{ ticket.category }}</p>
+      <p><strong>Submitted by:</strong> {{ ticket.creator.username if ticket.creator else 'Unknown' }}</p>
+
+      {% if ticket.assigned_agent %}
+        <p><strong>Assigned to:</strong> {{ ticket.assigned_agent.username }}</p>
+      {% endif %}
+
+      <p><strong>Created:</strong> {{ ticket.created_at.strftime('%Y-%m-%d %H:%M') }}</p>
+      <p>{{ ticket.description }}</p>
+
+      {% if ticket.attachment %}
+        <p><a href="{{ url_for('static', filename='uploads/' ~ ticket.attachment) }}" download>📎 Download Attachment</a></p>
+      {% endif %}
+    </div>
+
+    {% if current_user.id == ticket.agent_id %}
+      <form action="{{ url_for('agent.update_status', ticket_id=ticket.id) }}" method="POST">
+        <label for="status">Update Status:</label>
+        <select name="status" id="status">
+          <option value="In Progress" {% if ticket.status == 'In Progress' %}selected{% endif %}>In Progress</option>
+          <option value="Resolved" {% if ticket.status == 'Resolved' %}selected{% endif %}>Resolved</option>
+          <option value="Closed" {% if ticket.status == 'Closed' %}selected{% endif %}>Closed</option>
+        </select>
+        <button type="submit">Update</button>
+      </form>
+    {% endif %}
+
+    <hr>
+
+    <h3>Comments</h3>
+    <div class="comments">
+      {% for comment in ticket.comments %}
+        <div class="comment">
+          <strong>{{ comment.user.username }}:</strong>
+          {{ comment.content }}
+          <small>({{ comment.created_at.strftime('%Y-%m-%d %H:%M') }})</small>
+        </div>
+      {% else %}
+        <p>No comments yet.</p>
+      {% endfor %}
+    </div>
+
+    {% if current_user.id == ticket.user_id or current_user.id == ticket.agent_id %}
+      <form action="{{ url_for('comment.add_comment', ticket_id=ticket.id) }}" method="POST">
+        <label>Add a Comment</label>
+        <textarea name="content" placeholder="Add a comment..." required></textarea>
+        <button type="submit">Post Comment</button>
+      </form>
+    {% endif %}
+
+    <a href="{{ url_for('agent.agent_dashboard') }}" class="back-link">← Back to Dashboard</a>
+  </div>
+</body>
+</html>
