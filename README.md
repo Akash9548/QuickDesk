@@ -2,6 +2,7 @@
 QuickDesk is a sleek, role-based help desk ticketing system designed to streamline issue tracking, communication, and resolution across organizations. Whether you're an end-user seeking support, a technical agent managing tickets, or an admin overseeing the whole operation — QuickDesk provides a seamless, efficient, and visually appealing experience for all.
 
 🔍 Features
+
 🧑‍💻 User Dashboard
 
 Submit support tickets with attachments
